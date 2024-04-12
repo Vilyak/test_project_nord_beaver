@@ -1,9 +1,10 @@
-import { Sprite, Text } from "pixi.js";
+import { IPointData, Sprite } from "pixi.js";
 import { BaseView } from "../../mvc/BaseView";
 import { AssetsMapping } from "../..";
 import { OnChangePropHandler } from "../../mvc/decorators/OnChangePropHandler";
 import { Button } from "../../common/components/Button";
 import { GameEndController } from "./GameEndController";
+import { ZubiloText } from "../../common/components/ZubiloText";
 import gsap from "gsap";
 
 export class GameEndView extends BaseView<GameEndController<GameEndView>> {
@@ -28,7 +29,6 @@ export class GameEndView extends BaseView<GameEndController<GameEndView>> {
     }
 
     render() {
-
         this.content.sortableChildren = true;
 
         const rays = this.assets.getSprite(AssetsMapping.rays);
@@ -42,8 +42,7 @@ export class GameEndView extends BaseView<GameEndController<GameEndView>> {
 
         this.content.addChild(rays);
 
-        const background = this.assets.getTexture(AssetsMapping.infoPlateBig);
-        const backgroundSprite = new Sprite(background);
+        const backgroundSprite = this.assets.getSprite(AssetsMapping.infoPlateBig);
         this.content.sortableChildren = true;
 
         backgroundSprite.height = 600;
@@ -54,26 +53,19 @@ export class GameEndView extends BaseView<GameEndController<GameEndView>> {
         backgroundSprite.y = this.app.screen.height / 2;
         backgroundSprite.zIndex = 2;
 
-        const title = new Text('New Record:', { fontFamily: 'Zubilo', fontSize: 60, fill: '#003d71' });
+        const title = new ZubiloText('New Record:').size(60).color('#003d71');
         title.anchor.set(0.5, 0.65);
 
-        const scoleFontStyles = { fontFamily: 'Zubilo', fontSize: 184, fill: '#00fd17', dropShadow: true, dropShadowAlpha: 0.5, dropShadowAngle: 0.95, dropShadowDistance: 6 };
-        const scoreResult = new Text(this.score, scoleFontStyles);
+        const scoreResult = new ZubiloText(this.score).size(184).color('#00fd17').withShadow();
         scoreResult.anchor.set(0.5);
         scoreResult.position.y = 150;
 
-        const backgroundTitle = this.assets.getTexture(AssetsMapping.titleBack);
-        const backgroundTitleSprite = new Sprite(backgroundTitle);
+        const backgroundTitleSprite = this.assets.getSprite(AssetsMapping.titleBack);
         backgroundTitleSprite.anchor.set(0.5);
 
-        console.log(backgroundSprite.height)
         backgroundTitleSprite.position.set(0, -410);
-
+        backgroundTitleSprite.addChild(title, scoreResult);
         backgroundSprite.addChild(backgroundTitleSprite);
-
-        backgroundTitleSprite.addChild(title);
-        backgroundTitleSprite.addChild(scoreResult);
-
         this.content.addChild(backgroundSprite);
 
         const coin = this.assets.getSprite(AssetsMapping.collect_coin_icon);
@@ -87,13 +79,11 @@ export class GameEndView extends BaseView<GameEndController<GameEndView>> {
         backgroundSprite.addChild(coin);
         backgroundSprite.addChild(distanceIcon);
 
-        const coinsFontStyle = { fontFamily: 'Zubilo', fontSize: 74, fill: '#f4ad25', dropShadow: true, dropShadowAlpha: 0.5, dropShadowAngle: 0.95, dropShadowDistance: 6 };
-        const coinsText = new Text(this.coins, coinsFontStyle);
+        const coinsText = new ZubiloText(this.coins).size(74).color('#f4ad25').withShadow();
         coinsText.anchor.set(0.5, 0.65);
         coinsText.position.set(27, -40);
 
-        const distanceTextStyle = { fontFamily: 'Zubilo', fontSize: 74, fill: '#9ac6ff', dropShadow: true, dropShadowAlpha: 0.5, dropShadowAngle: 0.95, dropShadowDistance: 6 };
-        const distanceText = new Text(`${this.distance} m`, distanceTextStyle);
+        const distanceText = new ZubiloText(`${this.distance} m`).size(74).color('#9ac6ff').withShadow();
         distanceText.anchor.set(0.5, 0.65);
         distanceText.position.set(47, 125);
 
@@ -106,53 +96,29 @@ export class GameEndView extends BaseView<GameEndController<GameEndView>> {
         okBtn.y = 298;
         okBtn.onClick(this.controller.onOkBtnClick.bind(this.controller));
 
-        const starL1 = this.assets.getSprite(AssetsMapping.star);
-        starL1.anchor.set(0.5);
-        starL1.position.set(-500, -340);
-
-        const starL2 = this.assets.getSprite(AssetsMapping.star);
-        starL2.anchor.set(0.5);
-        starL2.scale.set(0.8);
-        starL2.position.set(-582, -112);
-
-        const starL3 = this.assets.getSprite(AssetsMapping.star);
-        starL3.anchor.set(0.5);
-        starL3.scale.set(1.5);
-        starL3.position.set(-597, 136);
-
-        const starL4 = this.assets.getSprite(AssetsMapping.star);
-        starL4.anchor.set(0.5);
-        starL4.position.set(-500, 377);
-
-        const starR1 = this.assets.getSprite(AssetsMapping.star);
-        starR1.anchor.set(0.5);
-        starR1.position.set(500, -340);
-
-        const starR2 = this.assets.getSprite(AssetsMapping.star);
-        starR2.anchor.set(0.5);
-        starR2.scale.set(1.5);
-        starR2.position.set(582, -112);
-
-        const starR3 = this.assets.getSprite(AssetsMapping.star);
-        starR3.anchor.set(0.5);
-        starR3.scale.set(1.5);
-        starR3.scale.set(0.8);
-        starR3.position.set(550, 136);
-
-        const starR4 = this.assets.getSprite(AssetsMapping.star);
-        starR4.anchor.set(0.5);
-        starR4.position.set(500, 377);
+        const starL1 = this.makeStar({ x: -500, y: -340 });
+        const starL2 = this.makeStar({ x: -582, y: -112 }, 0.8);
+        const starL3 = this.makeStar({ x: -597, y: 136 }, 1.5);
+        const starL4 = this.makeStar({ x: -500, y: 377 });
+        const starR1 = this.makeStar({ x: 500, y: -340 });
+        const starR2 = this.makeStar({ x: 582, y: -112 }, 1.5);
+        const starR3 = this.makeStar({ x: 550, y: 136 }, 0.8);
+        const starR4 = this.makeStar({ x: 550, y: 377 });
 
         this.rotateStarToLeft([starL1, starL2, starR3, starR4]);
         this.rotateStarToRight([starL3, starL4, starR1, starR2]);
 
-        backgroundSprite.addChild(okBtn);
-        backgroundSprite.addChild(coinsText);
-        backgroundSprite.addChild(distanceText);
-
-        backgroundSprite.addChild(starL1, starL2, starL3, starL4, starR1, starR2, starR3, starR4);
+        backgroundSprite.addChild(okBtn, coinsText, distanceText, starL1, starL2, starL3, starL4, starR1, starR2, starR3, starR4);
 
         return this.content;
+    }
+
+    private makeStar(position: IPointData, scale: number = 1) {
+        const newStar = this.assets.getSprite(AssetsMapping.star);
+        newStar.anchor.set(0.5);
+        newStar.scale.set(scale);
+        newStar.position = position;
+        return newStar;
     }
 
     rotateStarToLeft(sprites: Sprite[] | Sprite) {

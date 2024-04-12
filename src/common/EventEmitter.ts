@@ -1,30 +1,30 @@
 export class EventEmitter {
     private static instance: EventEmitter;
 
-    events: Record<string, any[]>;
+    events: Record<string, Function[]>;
 
     constructor() {
         this.events = {};
     }
 
-    on(event: any, listener: any) {
+    on(event: string, listener: Function) {
         if (!this.events[event]) {
             this.events[event] = [];
         }
         this.events[event].push(listener);
     }
 
-    emit(event: any, data?: any) {
+    emit(event: string, data?: any) {
         if (this.events[event]) {
-            this.events[event].forEach((listener: any) => listener(data));
+            this.events[event].forEach((listener: Function) => listener(data));
         }
     }
 
-    off(event: any, listenerToRemove: any) {
+    off(event: string, listenerToRemove: Function) {
         if (!this.events[event]) {
             return;
         }
-        this.events[event] = this.events[event].filter((listener: any) => listener !== listenerToRemove);
+        this.events[event] = this.events[event].filter((listener: Function) => listener !== listenerToRemove);
     }
 
     public static get Instance(): EventEmitter {

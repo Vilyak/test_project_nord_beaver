@@ -73,8 +73,8 @@ export const AssetsMapping = {
     btn_sound_1_hover: 'assets/btn_sound_1_hover.png',
     btn_sound_1_press: 'assets/btn_sound_1_press.png',
     floor: 'assets/floor.png',
+    bg_preloader: 'assets/bg_preloader.png',
 } as const;
-
 
 new AppBuidler()
     .setAssets(AssetsMapping)
