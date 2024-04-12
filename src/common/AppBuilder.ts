@@ -1,19 +1,24 @@
 import { Application, ColorSource } from "pixi.js";
-import { AssetEntity, AssetsProvider } from "./AssetsProvider";
+import { AssetsProvider } from "./AssetsProvider";
 import { RegisteredScene, SceneManager } from "./SceneManager";
 import { BaseModel } from "../mvc/BaseModel";
-import { BaseView } from "../mvc/BaseView";
+import { BaseView, IBaseView } from "../mvc/BaseView";
+import { Controller } from "../mvc/BaseController";
+import PixiPlugin from "gsap/PixiPlugin";
+import gsap from "gsap";
 
 export class AppBuidler {
 
     private assetsProvider: AssetsProvider;
     private readonly app: Application;
-    private readonly sceneManager: SceneManager<BaseView, BaseModel>;
+    private readonly sceneManager: SceneManager<BaseView<Controller>, BaseModel>;
     private firstScene?: string;
 
     constructor() {
         this.app = new Application();
-        this.assetsProvider = new AssetsProvider([]);
+        (globalThis as any).__PIXI_APP__ = this.app;
+        this.assetsProvider = new AssetsProvider({});
+        gsap.registerPlugin(PixiPlugin);
         this.sceneManager = new SceneManager(this.app, this.assetsProvider);
     }
 
@@ -29,13 +34,13 @@ export class AppBuidler {
         return this;
     }
 
-    setScenes(scenes: RegisteredScene<BaseView, BaseModel>[]) {
+    setScenes(scenes: RegisteredScene<IBaseView, BaseModel>[]) {
         this.sceneManager.init(scenes, this.assetsProvider);
 
         return this;
     }
 
-    setAssets(assets: AssetEntity[]) {
+    setAssets(assets: Record<string, string>) {
         this.assetsProvider = new AssetsProvider(assets);
 
         return this;
