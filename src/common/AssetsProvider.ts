@@ -31,7 +31,7 @@ export class AssetsProvider {
         await Assets.init({ manifest });
 
         await Assets.loadBundle('fonts');
-        await Assets.backgroundLoadBundle('textures');
+        Assets.backgroundLoadBundle('textures');
     }
 
     getTexture(path: string) {
