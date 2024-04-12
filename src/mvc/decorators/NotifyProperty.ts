@@ -1,7 +1,7 @@
 import { EventEmitter } from "../../common/EventEmitter";
 import { BaseModel } from "../BaseModel";
 
-export function NotifyPropery(target: BaseModel, key: string) {
+export function NotifyProperty(target: BaseModel, key: string) {
     let value = (target as any)[key];
     const getter = function () {
         return value;
