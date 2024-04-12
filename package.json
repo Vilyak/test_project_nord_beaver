@@ -9,6 +9,7 @@
     "build": "cross-env mode=production webpack"
   },
   "dependencies": {
+    "gsap": "^3.12.5",
     "pixi.js": "7.4.2"
   },
   "devDependencies": {

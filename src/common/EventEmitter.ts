@@ -14,7 +14,7 @@ export class EventEmitter {
         this.events[event].push(listener);
     }
 
-    emit(event: any, data: any) {
+    emit(event: any, data?: any) {
         if (this.events[event]) {
             this.events[event].forEach((listener: any) => listener(data));
         }
