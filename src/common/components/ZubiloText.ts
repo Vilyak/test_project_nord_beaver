@@ -22,7 +22,7 @@ export class ZubiloText extends Text {
         this.style.dropShadow = true;
         this.style.dropShadowAlpha = 0.5;
         this.style.dropShadowAngle = 0.95;
-        this.style.dropShadowDistance = 0.95;
+        this.style.dropShadowDistance = 6;
 
         return this;
     }
