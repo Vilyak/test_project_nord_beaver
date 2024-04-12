@@ -4,6 +4,7 @@ import { AssetsMapping } from "../..";
 import { Button } from "../../common/components/Button";
 import { LeaderBoardController } from "./LeaderBoardController";
 import { LeaderBoardInfo } from "./types";
+import { ZubiloText } from "../../common/components/ZubiloText";
 
 export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardView>> {
 
@@ -22,11 +23,13 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         if (this.leaderBoardName) {
             this.leaderBoardName.text = leaderBoardInfo.name;
         }
+
         this.currentItems.forEach(item => {
             if (!item.destroyed) {
                 item.destroy()
             }
         });
+
         this.tasks.forEach(item => clearTimeout(item));
         this.tasks = [];
         this.currentItems = [];
@@ -63,7 +66,7 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         const textColor = colors[order];
         const backName = backGrounds[order];
 
-        const nameText = new Text(username, { fontFamily: 'Zubilo', fontSize: 40, fill: textColor });
+        const nameText = new ZubiloText(username).size(40).color(textColor);
         nameText.anchor.set(0, 0.5);
         nameText.position.set(-165, -3);
 
@@ -71,7 +74,7 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         usernameBack.anchor.set(0.5);
         usernameBack.x = -95;
 
-        const scoreText = new Text(score, { fontFamily: 'Zubilo', fontSize: 32, fill: textColor });
+        const scoreText = new ZubiloText(score).size(32).color(textColor);
         scoreText.anchor.set(0.5, 0.5);
         scoreText.position.set(245, -3);
 
@@ -88,7 +91,7 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
     }
 
     private buildLeaderBoardDefaultItem(username: string, score: number, order: number) {
-        const nameText = new Text(username, { fontFamily: 'Zubilo', fontSize: 32, fill: 'black' });
+        const nameText = new ZubiloText(username).size(32).color('black');
         nameText.anchor.set(0, 0.5);
         nameText.position.set(-200, -3);
 
@@ -96,7 +99,7 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         usernameBack.anchor.set(0.5);
         usernameBack.x = -60;
 
-        const scoreText = new Text(score, { fontFamily: 'Zubilo', fontSize: 32, fill: 'black' });
+        const scoreText = new ZubiloText(score).size(32).color('black');
         scoreText.anchor.set(0.5, 0.5);
         scoreText.position.set(245, -3);
 
@@ -104,14 +107,12 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         scoreBack.anchor.set(-1, 0.5);
         scoreBack.x = 70;
 
-        const orderText = new Text(order, { fontFamily: 'Zubilo', fontSize: 37, fill: 'white' });
+        const orderText = new ZubiloText(order).size(37).color('white');
         orderText.anchor.set(0.5);
         orderText.position.set(-245, -3);
 
         scoreBack.addChild(scoreText);
-        usernameBack.addChild(scoreBack);
-        usernameBack.addChild(orderText);
-        usernameBack.addChild(nameText);
+        usernameBack.addChild(scoreBack, orderText, nameText);
 
         return usernameBack;
     }
@@ -128,25 +129,19 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         this.backgroundSprite.x = this.app.screen.width / 2;
         this.backgroundSprite.y = this.app.screen.height / 2;
 
-        const title = new Text('Leaderboard:', { fontFamily: 'Zubilo', fontSize: 60, fill: '#003d71' });
+        const title = new ZubiloText('Leaderboard:').size(60).color('#003d71');
         title.anchor.set(0.5, 0.65);
 
-        const styles = { fontFamily: 'Zubilo', fontSize: 65, fill: '#ff6800', dropShadow: true, dropShadowAlpha: 0.5, dropShadowAngle: 0.95, dropShadowDistance: 6 };
-        this.leaderBoardName = new Text(undefined, styles);
+        this.leaderBoardName = new ZubiloText('Leaderboard:').size(65).color('#ff6800').withShadow();
         this.leaderBoardName.anchor.set(0.5);
         this.leaderBoardName.position.y = 100;
 
-        const backgroundTitle = this.assets.getTexture(AssetsMapping.titleBack);
-        const backgroundTitleSprite = new Sprite(backgroundTitle);
+        const backgroundTitleSprite = this.assets.getSprite(AssetsMapping.titleBack);
         backgroundTitleSprite.anchor.set(0.5);
-
         backgroundTitleSprite.position.set(0, -410);
 
-        this.backgroundSprite.addChild(backgroundTitleSprite);
 
-        backgroundTitleSprite.addChild(title);
-
-        backgroundTitleSprite.addChild(this.leaderBoardName);
+        backgroundTitleSprite.addChild(title, this.leaderBoardName);
 
         this.content.addChild(this.backgroundSprite);
 
@@ -160,7 +155,6 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         prevBtn.scale.x *= -1;
         prevBtn.onClick(this.controller.onPrevBtnClick.bind(this.controller));
 
-        this.leaderBoardName.addChild(prevBtn);
 
         const nextBtn = new Button(
             this.assets.getTexture(AssetsMapping.arrow_btn_active),
@@ -171,8 +165,6 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         nextBtn.anchor.set(0.5);
         nextBtn.onClick(this.controller.onNextBtnClick.bind(this.controller));
 
-        this.leaderBoardName.addChild(nextBtn);
-
         const okBtn = new Button(
             this.assets.getTexture(AssetsMapping.ok_button_active),
             this.assets.getTexture(AssetsMapping.ok_button_hover),
@@ -182,7 +174,8 @@ export class LeaderBoardView extends BaseView<LeaderBoardController<LeaderBoardV
         okBtn.y = 298;
         okBtn.onClick(this.controller.onOkBtnClick.bind(this.controller));
 
-        this.backgroundSprite.addChild(okBtn);
+        this.leaderBoardName.addChild(prevBtn, nextBtn);
+        this.backgroundSprite.addChild(okBtn, backgroundTitleSprite);
 
         return this.content;
     }

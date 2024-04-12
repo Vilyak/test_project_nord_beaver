@@ -1,10 +1,9 @@
 import { Application, Container, DisplayObject, Sprite, Text } from "pixi.js";
 import { BaseView } from "../../mvc/BaseView";
-import { AssetsMapping, Popups, Scenes } from "../..";
+import { AssetsMapping } from "../..";
 import { GameController } from "./GameController";
 import { Button } from "../../common/components/Button";
 import { AssetsProvider } from "../../common/AssetsProvider";
-import { BaseModel } from "../../mvc/BaseModel";
 import { GameModel, GameState } from "./GameModel";
 import { DynamicEnvironment } from "./DynamicEnvironment";
 import { Player } from "./Player";
@@ -37,7 +36,7 @@ export class GameView extends BaseView<GameController<GameView>> {
 
     private endGameHandler(player: Player) {
         return () => {
-            if (!this.player.endedTween && this.environment.sumDelta >= 8000) {
+            if (!this.player.endedTween && this.environment.sumDelta >= 8000 && !this.player.inJump) {
                 this.player.endAnimation(this.environment.getSlope(), () => {
                     this.app.ticker.remove(this.endGameHandler(player));
                     this.player.setInitialPositions();
@@ -64,10 +63,11 @@ export class GameView extends BaseView<GameController<GameView>> {
         if (soundEnabled) {
             this.soundEnableBtn?.setVisible(false);
             this.soundDisableBtn?.setVisible(true);
-        } else {
-            this.soundEnableBtn?.setVisible(true);
-            this.soundDisableBtn?.setVisible(false);
+            return;
         }
+
+        this.soundEnableBtn?.setVisible(true);
+        this.soundDisableBtn?.setVisible(false);
     }
 
     upperPanel() {
@@ -152,8 +152,6 @@ export class GameView extends BaseView<GameController<GameView>> {
         this.content.addChild(background, mountations1, mountations2, ...this.upperPanel());
 
         this.content.addChild(this.player.build(), this.environment.build());
-
-
 
         return this.content;
     }

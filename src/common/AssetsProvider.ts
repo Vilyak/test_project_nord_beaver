@@ -1,4 +1,4 @@
-import { Assets, Sprite, Texture } from "pixi.js";
+import { Assets, Loader, Sprite, Texture } from "pixi.js";
 import { AssetsMapping } from "..";
 
 export class AssetsProvider {
@@ -13,13 +13,25 @@ export class AssetsProvider {
             alias: this.assets[key]
         }));
 
-        Assets.addBundle('fonts', [
-            { alias: 'Zubilo', src: AssetsMapping.font },
-        ]);
+        const manifest = {
+            bundles: [
+                {
+                    name: 'fonts',
+                    assets: [
+                        { alias: 'Zubilo', src: AssetsMapping.font },
+                    ],
+                },
+                {
+                    name: 'textures',
+                    assets: importantAssets,
+                },
+            ]
+        };
+
+        await Assets.init({ manifest });
 
         await Assets.loadBundle('fonts');
-
-        await Assets.load(importantAssets);
+        await Assets.backgroundLoadBundle('textures');
     }
 
     getTexture(path: string) {

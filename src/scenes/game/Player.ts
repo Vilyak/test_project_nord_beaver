@@ -6,7 +6,7 @@ export class Player {
     private readonly IN_GAME_POSITIONS = { x: 520, y: 334 };
 
     public endedTween?: gsap.core.Tween;
-    private inJump: boolean;
+    public inJump: boolean;
     private isInitialized: boolean;
 
     constructor(
@@ -21,6 +21,7 @@ export class Player {
         this.player.position.set(50, 277);
         this.player.angle = 9;
         this.player.scale.set(0.4);
+        this.endedTween = undefined;
     }
 
     start() {
